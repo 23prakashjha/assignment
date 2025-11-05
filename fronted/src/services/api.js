@@ -1,42 +1,21 @@
 // src/services/api.js
 import axios from "axios";
 
-// ✅ Create a configured Axios instance
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // 👈 Change if your backend runs on another port or path
-  withCredentials: false, // Set to true if backend uses cookies/sessions
+  // 👇 IMPORTANT: include `/api` in baseURL if your backend routes start with /api
+  baseURL: "https://assignment-w67j.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ✅ Automatically attach token (if it exists)
-API.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// ✅ Optional: centralized error logging (helps debugging 404s or 500s)
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      console.error(
-        `❌ API Error: ${error.response.status} - ${error.response.config.url}`,
-        error.response.data
-      );
-    } else {
-      console.error("❌ API Network Error:", error.message);
-    }
-    return Promise.reject(error);
+// Automatically attach token if exists
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
 export default API;
-
